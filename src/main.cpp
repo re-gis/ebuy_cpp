@@ -13,7 +13,8 @@ int main()
     const std::string db_name = "ec_cpp";
     const unsigned int db_port = 5432;
 
-    DatabaseConfig dbConfig(db_name, db_password, db_name, db_host, db_port);
+
+    DatabaseConfig dbConfig(db_user, db_password, db_name, db_host, db_port);
     auto db = dbConfig.getDatabase();
 
     crow::SimpleApp app;
@@ -31,7 +32,7 @@ int main()
             return "Database connection failed...";
         } });
 
-    UserService userService(db);
+    UserService userService(*db);
 
     UserController userController(userService);
     userController.registerUserRoutes(app);

@@ -1,7 +1,7 @@
 # Compiler and flags
 CXX = g++
 CXXFLAGS = -I include/ -I /home/cielo/Workspace/c++/jwt-cpp/include -L /lib/x86_64-linux-gnu  # Include jwt-cpp headers
-LIBS = -lpq -lodb-pgsql -lssl -lcrypto  # Add OpenSSL libraries
+LIBS = -lpq -lpqxx -lodb-pgsql -lssl -lcrypto -lcrypt  # Add OpenSSL and PostgreSQL libraries
 
 # Source files
 SRC = src/main.cpp src/database/DatabaseConfig.cpp src/controllers/UserController.cpp src/responses/ResponseUtils.cpp src/services/UserService.cpp

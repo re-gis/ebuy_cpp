@@ -12,12 +12,12 @@ void UserController::registerUserRoutes(crow::SimpleApp &app)
             std::string password = json["password"].s();
             std::string role = json["role"].s();
 
-            if (username.empty() || email.empty() || password.empty()) {
+            if (username.empty() || email.empty() || password.empty() || username == "" || email == "" || password == "") {
                 return crow::response(ResponseUtils::createResponse(false, "All user details are required"));
             }
 
             if (role.empty()) {
-                role = "CUSTOMER";  // Default role
+                role = "CUSTOMER";
             }
 
             std::string result = userService.registerUser(username, email, password, role);
@@ -96,15 +96,12 @@ void UserController::getAllUsersByRoleRoutes(crow::SimpleApp &app)
         try {
             std::vector<User> users = userService.getAllUsersByRole(role);
 
-            // Create an empty wvalue object (this will hold our array)
             crow::json::wvalue response_json;
 
-            // Loop through users and add each user's JSON representation to the response
             for (const auto& user : users) {
-                response_json[user.id] = user.to_json();  // Use an object-based approach to hold the users
+                response_json[user.id] = user.to_json(); 
             }
 
-            // Return the response as a JSON
             return crow::response(response_json);
         } catch (const std::exception &e) {
             return crow::response(ResponseUtils::createResponse(false, std::string("Error: ") + e.what()));

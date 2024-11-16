@@ -1,22 +1,30 @@
 #include "database/DatabaseConfig.hpp"
-#include <odb/pgsql/database.hxx>
-#include <iostream>
 
-DatabaseConfig::DatabaseConfig(const std::string &user, const std::string &password, const std::string &db, const std::string &host, const unsigned int port)
-    : db_user_(user), db_password_(password), db_host_(host), db_port_(port), db_name_(db)
+DatabaseConfig::DatabaseConfig(const std::string &user, const std::string &password,
+                               const std::string &db, const std::string &host,
+                               const unsigned int port)
+    : db_user_(user), db_password_(password), db_name_(db), db_host_(host), db_port_(port)
+{
+    conn_string_ = "dbname=" + db_name_ +
+                   " user=" + db_user_ +
+                   " password=" + db_password_ +
+                   " host=" + db_host_ +
+                   " port=" + std::to_string(db_port_);
+}
+
+std::shared_ptr<pqxx::connection> DatabaseConfig::getDatabase()
 {
     try
     {
-        db_ = std::make_shared<odb::pgsql::database>(db_user_, db_password_, db_name_, db_host_, std::to_string(db_port_));
-        std::cout << "Database connected successfully..." << std::endl;
+        auto connection = std::make_shared<pqxx::connection>(conn_string_);
+        if (!connection->is_open())
+        {
+            throw std::runtime_error("Failed to connect to the database.");
+        }
+        return connection;
     }
-    catch (const odb::exception &e)
+    catch (const std::exception &e)
     {
-        std::cerr << "Database connection error: " << e.what() << std::endl;
+        throw std::runtime_error(std::string("Database connection error: ") + e.what());
     }
-}
-
-std::shared_ptr<odb::pgsql::database> DatabaseConfig::getDatabase()
-{
-    return db_;
 }

@@ -1,30 +1,30 @@
-#ifndef USERSERVICE_HPP
-#define USERSERVICE_HPP
+#ifndef USER_SERVICE_H
+#define USER_SERVICE_H
 
 #include <string>
-#include <vector>
-#include <memory>
-#include <odb/pgsql/database.hxx>
-#include "../models/User.hpp"
+#include <pqxx/pqxx>
+#include "models/User.hpp"
+#include <crypt.h>
 
 class UserService
 {
-private:
-    std::shared_ptr<odb::pgsql::database> db_;
-
-    std::string hashPassword(const std::string &password);
-    std::string hashAnyString(const std::string &_mystring);
-
 public:
-    explicit UserService(const std::shared_ptr<odb::pgsql::database> &db) : db_(db) {}
+    pqxx::connection &conn;
 
+    UserService(pqxx::connection &conn) : conn(conn) {}
     std::string registerUser(const std::string &username, const std::string &email, const std::string &password, const std::string &role);
     std::string login(const std::string &email, const std::string &password);
-    std::string updateUser(int user_id, const std::string &username, const std::string &email, const std::string &password);
+    std::string updateUser(int user_id, std::string &username, std::string &email, std::string &password);
     User getUserById(int user_id);
+    std::vector<User> getAllUsers();
+    std::string deleteUser(int user_id);
+    User getLoggedInUser(int user_id);
     std::vector<User> getAllUsersByRole(const std::string &role);
-    std::string deleteUser(int userId);
-    User getLoggedInUser(int userId);
+
+private:
+    std::string hashPassword(const std::string &password);
+    std::string generateToken(int user_id, const std::string &email, const std::string &role, std::string &username);
+    std::string hashAnyString(const std::string &_mystring);
 };
 
 #endif

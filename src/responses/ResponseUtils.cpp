@@ -2,9 +2,10 @@
 
 namespace ResponseUtils
 {
+
     crow::json::wvalue createResponse(bool success, const std::string &message,
-                                      const std::string &token
-                                      )
+                                      const std::string &token,
+                                      const crow::json::wvalue &data)
     {
         crow::json::wvalue response;
         response["success"] = success;
@@ -18,8 +19,7 @@ namespace ResponseUtils
         // Check if data is valid and not null before adding it to the response
         // if (data.size() > 0)
         // {
-        //     // Copy the data content into the response
-        //     response["data"] = data;  // Direct assignment instead of move
+        //     response["data"] = std::move(data);  // Move data to avoid assignment error
         // }
 
         return response;
