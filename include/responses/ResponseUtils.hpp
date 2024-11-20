@@ -3,13 +3,14 @@
 
 #include "crow/json.h"
 #include <string>
+#include <nlohmann/json.hpp> 
 
 namespace ResponseUtils
 {
 
-    crow::json::wvalue createResponse(bool success, const std::string &message,
-                                      const std::string &token = "",
-                                      const crow::json::wvalue &data = {});
+    ApiResponse createResponse(bool success, const std::string &message,
+                           const std::string &token = "",
+                           const nlohmann::json &data = {});
 }
 
 #endif

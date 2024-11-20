@@ -3,6 +3,8 @@
 #include <iostream>
 #include "services/UserService.hpp"
 #include "controllers/UserController.hpp"
+#include "services/ProductService.hpp"
+#include "controllers/ProductController.hpp"
 
 int main()
 {
@@ -12,7 +14,6 @@ int main()
     const std::string db_host = "127.0.0.1";
     const std::string db_name = "ec_cpp";
     const unsigned int db_port = 5432;
-
 
     DatabaseConfig dbConfig(db_user, db_password, db_name, db_host, db_port);
     auto db = dbConfig.getDatabase();
@@ -41,6 +42,15 @@ int main()
     userController.getUserRoutes(app);
     userController.getAllUsersByRoleRoutes(app);
     userController.deleteUserRoutes(app);
+
+    ProductService productService(*db);
+
+    ProductController productController(productService);
+    productController.createProductRoutes(app);
+    productController.getAllProductsRoutes(app);
+    productController.getProductByIdRoutes(app);
+    productController.deleteProductRoutes(app);
+    productController.updateProductRoutes(app);
 
     app.port(8080).multithreaded().run();
 

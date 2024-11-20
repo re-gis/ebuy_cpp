@@ -4,7 +4,7 @@ CXXFLAGS = -I include/ -I /home/cielo/Workspace/c++/jwt-cpp/include -L /lib/x86_
 LIBS = -lpq -lpqxx -lodb-pgsql -lssl -lcrypto -lcrypt  # Add OpenSSL and PostgreSQL libraries
 
 # Source files
-SRC = src/main.cpp src/database/DatabaseConfig.cpp src/controllers/UserController.cpp src/responses/ResponseUtils.cpp src/services/UserService.cpp
+SRC = src/main.cpp src/database/DatabaseConfig.cpp src/controllers/UserController.cpp src/responses/ResponseUtils.cpp src/services/UserService.cpp src/services/ProductService.cpp src/controllers/ProductController.cpp
 OBJ = $(SRC:.cpp=.o)
 
 # Output binary

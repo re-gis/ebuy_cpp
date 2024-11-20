@@ -1,18 +1,19 @@
 #include "controllers/UserController.hpp"
 #include "responses/ResponseUtils.hpp"
+#include <nlohmann/json.hpp>  // Include for lohmann/json
 
 void UserController::registerUserRoutes(crow::SimpleApp &app)
 {
     CROW_ROUTE(app, "/register").methods("POST"_method)([this](const crow::request &req)
     {
         try {
-            auto json = crow::json::load(req.body);
-            std::string username = json["username"].s();
-            std::string email = json["email"].s();
-            std::string password = json["password"].s();
-            std::string role = json["role"].s();
+            auto json = nlohmann::json::parse(req.body);  // Use lohmann/json for parsing
+            std::string username = json["username"];
+            std::string email = json["email"];
+            std::string password = json["password"];
+            std::string role = json["role"];
 
-            if (username.empty() || email.empty() || password.empty() || username == "" || email == "" || password == "") {
+            if (username.empty() || email.empty() || password.empty()) {
                 return crow::response(ResponseUtils::createResponse(false, "All user details are required"));
             }
 
@@ -33,10 +34,10 @@ void UserController::loginUserRoutes(crow::SimpleApp &app)
     CROW_ROUTE(app, "/login").methods("POST"_method)([this](const crow::request &req)
     {
         try {
-            auto json = crow::json::load(req.body);
-            std::string email = json["email"].s();
-            std::string password = json["password"].s();
-            
+            auto json = nlohmann::json::parse(req.body);  // Use lohmann/json for parsing
+            std::string email = json["email"];
+            std::string password = json["password"];
+
             if (email.empty() || password.empty()) {
                 return crow::response(ResponseUtils::createResponse(false, "Login details are required"));
             }
@@ -58,10 +59,10 @@ void UserController::updateUserRoutes(crow::SimpleApp &app)
     CROW_ROUTE(app, "/update/<int>").methods("PUT"_method)([this](const crow::request &req, int _user_id)
     {
         try {
-            auto json = crow::json::load(req.body);
-            std::string username = json["username"].s();
-            std::string email = json["email"].s();
-            std::string password = json["password"].s();
+            auto json = nlohmann::json::parse(req.body);  // Use lohmann/json for parsing
+            std::string username = json["username"];
+            std::string email = json["email"];
+            std::string password = json["password"];
 
             std::string result = userService.updateUser(_user_id, username, email, password);
             return crow::response(ResponseUtils::createResponse(true, "User updated successfully", result));
@@ -77,12 +78,12 @@ void UserController::getUserRoutes(crow::SimpleApp &app)
     {
         try {
             User user = userService.getUserById(_user_id);
-            crow::json::wvalue response;
+            nlohmann::json response;
             response["id"] = user.id;
             response["username"] = user.username;
             response["email"] = user.email;
             response["role"] = user.role;
-            return crow::response(response);
+            return crow::response(response.dump());  // Use lohmann/json to serialize response
         } catch (const std::exception &e) {
             return crow::response(ResponseUtils::createResponse(false, std::string("Error: ") + e.what()));
         }
@@ -96,21 +97,18 @@ void UserController::getAllUsersByRoleRoutes(crow::SimpleApp &app)
         try {
             std::vector<User> users = userService.getAllUsersByRole(role);
 
-            crow::json::wvalue response_json;
+            nlohmann::json response_json;
 
             for (const auto& user : users) {
-                response_json[user.id] = user.to_json(); 
+                response_json[std::to_string(user.id)] = user.to_json();  // lohmann/json serialization
             }
 
-            return crow::response(response_json);
+            return crow::response(response_json.dump());  // Serialize the response to JSON
         } catch (const std::exception &e) {
             return crow::response(ResponseUtils::createResponse(false, std::string("Error: ") + e.what()));
         }
     });
 }
-
-
-
 
 void UserController::deleteUserRoutes(crow::SimpleApp &app)
 {

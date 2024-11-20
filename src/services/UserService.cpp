@@ -41,7 +41,12 @@ std::string UserService::registerUser(const std::string &username, const std::st
     {
         pqxx::work txn(conn);
         // check if the user already exists
-        std::string _select_query = 
+        std::string _select_query = "SELECT * FROM users WHERE email = " + txn.quote(email);
+        pqxx::result r = txn.exec(_select_query);
+        if (r.size() > 0)
+        {
+            return std::string("Email ") + email + std::string(" already taken.");
+        }
 
         std::string query = "INSERT INTO users (username, email,password, role) VALUES (" + txn.quote(username) + ", " + txn.quote(email) + ", " + txn.quote(hashedPassword) + ", " + txn.quote(role) + ")";
         txn.exec(query);
@@ -62,7 +67,7 @@ std::string UserService::login(const std::string &email, const std::string &pass
     {
         pqxx::work txn(conn);
         pqxx::result r = txn.exec("SELECT id, username, email, role, password FROM users WHERE email = " + txn.quote(email));
-        if (r.size()== 0)
+        if (r.size() == 0)
         {
             std::cout << "User not found!" << std::endl;
             return "Invalid email or password!";
