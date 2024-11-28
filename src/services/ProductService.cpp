@@ -39,6 +39,7 @@ Product ProductService::getProductById(int product_id)
     {
         pqxx::work _txn(conn);
         pqxx::result _res = _txn.exec("SELECT id, name, description, category, stock, price FROM products WHERE id = " + _txn.quote(product_id));
+        
         if (_res.size() == 0)
         {
             throw std::runtime_error("Product not found!");
@@ -46,9 +47,16 @@ Product ProductService::getProductById(int product_id)
 
         Product _product;
         _product.id = _res[0][0].as<int>();
-        _product.name = _res[0][1].as<std::string>();
-        _product.category = _res[0][3].as<std::string>();
-        _product.description = _res[0][2].as<std::string>();
+        
+        // Check if the name is NULL and handle it
+        _product.name = _res[0][1].is_null() ? "" : _res[0][1].as<std::string>();
+        
+        // Check if the description is NULL and handle it
+        _product.description = _res[0][2].is_null() ? "" : _res[0][2].as<std::string>();
+        
+        // Check if the category is NULL and handle it
+        _product.category = _res[0][3].is_null() ? "" : _res[0][3].as<std::string>();
+        
         _product.price = _res[0][5].as<double>();
         _product.stock = _res[0][4].as<int>();
 
@@ -57,9 +65,11 @@ Product ProductService::getProductById(int product_id)
     catch (std::exception &e)
     {
         std::cout << "Error: " << e.what() << std::endl;
+        std::cout << "Error: " << e.what() << std::endl;
         throw;
     }
 }
+
 
 std::vector<Product> ProductService::getAllProducts()
 {

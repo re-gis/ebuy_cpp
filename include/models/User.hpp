@@ -24,8 +24,8 @@ public:
         json["username"] = username;
         json["email"] = email;
         json["role"] = role;
-        json["created_at"] = static_cast<long long>(created_at); // Ensure time_t is converted to a valid format
-        json["updated_at"] = static_cast<long long>(updated_at); // Same for updated_at
+        json["created_at"] = static_cast<long long>(created_at); 
+        json["updated_at"] = static_cast<long long>(updated_at); 
         return json;
     }
 };

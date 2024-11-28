@@ -76,6 +76,9 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "pqxx": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "forward_list": "cpp",
+        "ranges": "cpp",
+        "valarray": "cpp"
     }
 }

@@ -1,9 +1,12 @@
 #include "services/UserService.hpp"
+#include "utils/Validator.hpp"
 #include <iostream>
 #include <vector>
 #include <crypt.h>
 #include <pqxx/pqxx>
 #include <jwt-cpp/jwt.h>
+
+Validators validators;
 
 std::string UserService::hashPassword(const std::string &password)
 {
@@ -25,7 +28,7 @@ std::string UserService::generateToken(int user_id, const std::string &email, co
     auto token = jwt::create()
                      .set_issuer("ecommerce_app")
                      .set_subject("user_login")
-                     .set_payload_claim("user_id", jwt::claim(hashAnyString(std::to_string(user_id))))
+                     .set_payload_claim("user_id", jwt::claim(std::to_string(user_id)))
                      .set_payload_claim("username", jwt::claim(hashAnyString(username)))
                      .set_payload_claim("email", jwt::claim(hashAnyString(email)))
                      .set_payload_claim("role", jwt::claim(hashAnyString(role)))
@@ -81,7 +84,19 @@ std::string UserService::login(const std::string &email, const std::string &pass
         const char *salt = _storeHashedPass.substr(0, 12).c_str();
         char *_hashedInputPass = crypt(password.c_str(), salt);
 
-        if (_hashedInputPass == _storeHashedPass)
+        // if (_hashedInputPass == _storeHashedPass)
+        // {
+        //     std::string token = generateToken(_user_id, _email, _role, _username);
+        //     return token;
+        // }
+        // else
+        // {
+        //     std::cout << "Invalid password!" << std::endl;
+        //     return "Invalid email or password!";
+        // }
+
+        bool res = validators.checkValidPassword(_storeHashedPass, _hashedInputPass);
+        if (res)
         {
             std::string token = generateToken(_user_id, _email, _role, _username);
             return token;

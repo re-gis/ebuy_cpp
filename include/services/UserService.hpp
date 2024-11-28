@@ -15,7 +15,7 @@ public:
     std::string registerUser(const std::string &username, const std::string &email, const std::string &password, const std::string &role);
     std::string login(const std::string &email, const std::string &password);
     std::string updateUser(int user_id, std::string &username, std::string &email, std::string &password);
-    User getUserById(int user_id);
+    static User getUserById(int user_id);
     std::vector<User> getAllUsers();
     std::string deleteUser(int user_id);
     User getLoggedInUser(int user_id);
