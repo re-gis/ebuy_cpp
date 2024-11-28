@@ -6,6 +6,10 @@
 #include "models/CartItem.hpp"  // Include this if CartItem is in a separate header file
 #include "models/Product.hpp"  // Include Product if you are handling product-related operations
 
+
+
+// TODO: Making the cart && cart item service && controller
+
 class CartService
 {
     pqxx::connection &conn;
